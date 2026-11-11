@@ -1,6 +1,6 @@
 # CMake e artefatos de compilacao
 /build/
-/Código/build/
+/src/build/
 cmake-build-*/
 CMakeFiles/
 CMakeCache.txt
@@ -21,9 +21,7 @@ _deps/
 *.dll
 *.exe
 *.out
-/Código/Trab1
-/Código/main
-/Código/ativ1
+/src/ImageLab
 
 # Qt Creator
 *.pro.user

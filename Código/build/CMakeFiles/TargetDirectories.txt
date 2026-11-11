@@ -1,3 +1,0 @@
-/home/matheus/UFRGS/FPI/Trab1/build/CMakeFiles/Trab1.dir
-/home/matheus/UFRGS/FPI/Trab1/build/CMakeFiles/edit_cache.dir
-/home/matheus/UFRGS/FPI/Trab1/build/CMakeFiles/rebuild_cache.dir

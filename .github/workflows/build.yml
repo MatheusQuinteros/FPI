@@ -1,0 +1,101 @@
+name: Build
+
+# Compila em todo push/PR; em tags v* também publica uma Release com os executáveis
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  QT_VERSION: "6.5.3"
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          cache: true
+
+      - name: Dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libfuse2
+
+      - name: Compilar
+        run: |
+          cmake -S src -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build --parallel
+          DESTDIR=AppDir cmake --install build
+
+      - name: Empacotar AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+          export QMAKE="$(which qmake)"
+          export OUTPUT=ImageLab-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir \
+            --desktop-file packaging/imagelab.desktop \
+            --icon-file packaging/imagelab.png \
+            --plugin qt --output appimage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ImageLab-linux
+          path: ImageLab-x86_64.AppImage
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Compilar
+        run: |
+          cmake -S src -B build
+          cmake --build build --config Release --parallel
+
+      - name: Empacotar ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force ImageLab | Out-Null
+          Copy-Item build/Release/ImageLab.exe ImageLab/
+          windeployqt --release --no-translations ImageLab/ImageLab.exe
+          Compress-Archive -Path ImageLab -DestinationPath ImageLab-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ImageLab-windows
+          path: ImageLab-windows.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ImageLab-x86_64.AppImage
+            ImageLab-windows.zip
+          generate_release_notes: true

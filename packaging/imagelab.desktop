@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ImageLab
+Comment=Laboratório de processamento de imagens (Qt 6)
+Exec=ImageLab
+Icon=imagelab
+Categories=Graphics;Education;
+Terminal=false

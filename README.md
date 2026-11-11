@@ -1,111 +1,111 @@
-# Laboratório de Processamento de Imagens
+<div align="center">
 
-Aplicativo desktop desenvolvido em C++ e Qt 6 para aplicar e comparar operações de processamento digital de imagens. A interface exibe a imagem original e o resultado lado a lado, permitindo experimentar diferentes transformações e salvar o resultado em JPEG.
+<img src="packaging/imagelab.png" width="96" alt="ImageLab">
 
-O projeto foi desenvolvido para a disciplina **INF01046 — Fundamentos de Processamento de Imagens**, da UFRGS.
+# ImageLab: Laboratório de Processamento de Imagens
 
-## Funcionalidades
+Aplicativo desktop em **C++17 e Qt 6** que implementa do zero, sem OpenCV, algoritmos clássicos de processamento digital de imagens e mostra a imagem original e o resultado lado a lado.
 
-- Leitura e gravação de imagens JPEG.
-- Visualização simultânea da imagem original e do resultado.
-- Espelhamento horizontal e vertical.
-- Conversão para tons de cinza por luminância.
-- Quantização de tons.
-- Ajustes de brilho e contraste.
-- Negativo da imagem.
-- Redução e ampliação com interpolação.
-- Rotação de 90 graus nos sentidos horário e anti-horário.
-- Geração e visualização de histogramas.
-- Equalização de histograma.
-- Correspondência de histogramas para imagens em tons de cinza.
-- Convolução com kernels 3x3 arbitrários e filtros predefinidos, incluindo Gaussiano, Laplaciano, Prewitt e Sobel.
+[![Build](https://github.com/MatheusQuinteros/FPI/actions/workflows/build.yml/badge.svg)](https://github.com/MatheusQuinteros/FPI/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/MatheusQuinteros/FPI)](https://github.com/MatheusQuinteros/FPI/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus)
+![Qt 6](https://img.shields.io/badge/Qt-6-41CD52?logo=qt)
 
-## Tecnologias
+**[⬇️ Baixar para Windows ou Linux](https://github.com/MatheusQuinteros/FPI/releases/latest)**: não precisa instalar nada.
 
-- C++17
-- Qt 6 Widgets
-- CMake 3.16 ou superior
-- [stb_image](https://github.com/nothings/stb) e `stb_image_write` para leitura e gravação de imagens
+🇺🇸 [English version](README.en.md)
 
-As bibliotecas STB estão incluídas no repositório. Portanto, não é necessário instalar uma biblioteca JPEG separadamente.
+</div>
 
-## Pré-requisitos
+---
 
-Para compilar o projeto, é necessário ter um compilador com suporte a C++17, CMake e os arquivos de desenvolvimento do Qt 6.
+## Demonstração
 
-No Ubuntu ou Debian:
+<!--
+  Para ativar: salve as capturas em docs/ e remova este comentário.
+  Sugestão: um GIF curto (10 a 15 s) abrindo uma foto e aplicando Sobel, equalização e rotação.
+
+<p align="center">
+  <img src="docs/demo.gif" width="800" alt="Demonstração do ImageLab">
+</p>
+
+<p align="center">
+  <img src="docs/screenshot.png" width="800" alt="Original e resultado lado a lado">
+</p>
+-->
+
+## Destaques técnicos
+
+- **Algoritmos implementados à mão**, com manipulação direta do buffer de pixels RGB e sem bibliotecas de visão computacional.
+- **Convolução 3x3 genérica**, com kernels arbitrários e filtros prontos (Gaussiano, Laplaciano, Prewitt, Sobel) e tratamento de passa-altas (offset de 127).
+- **Histogramas**: cálculo, visualização, equalização e *histogram matching* entre duas imagens.
+- **Transformações geométricas**: espelhamento, rotação de 90° e redução/ampliação com interpolação.
+- **Interface Qt 6 Widgets**, com diálogos de parâmetros e comparação lado a lado.
+- **Build com CMake e CI no GitHub Actions**, que gera AppImage (Linux) e ZIP (Windows) a cada versão.
+
+## Como executar
+
+### Opção 1: baixar o executável
+
+Na página de [Releases](https://github.com/MatheusQuinteros/FPI/releases/latest):
+
+- **Windows**: baixe `ImageLab-windows.zip`, extraia o arquivo e abra `ImageLab.exe`.
+- **Linux**: baixe `ImageLab-x86_64.AppImage` e execute:
+
+  ```bash
+  chmod +x ImageLab-x86_64.AppImage && ./ImageLab-x86_64.AppImage
+  ```
+
+### Opção 2: compilar a partir do código
+
+Pré-requisitos: compilador C++17, CMake 3.16 ou superior e Qt 6.
 
 ```bash
-sudo apt update
+# Ubuntu/Debian
 sudo apt install build-essential cmake qt6-base-dev
-```
-
-No Fedora:
-
-```bash
+# Fedora
 sudo dnf install gcc-c++ cmake qt6-qtbase-devel
 ```
 
-## Compilação
-
-Na raiz do repositório, execute:
-
 ```bash
-cmake -S "Código" -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S src -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
-```
-
-Depois, inicie o programa:
-
-```bash
-./build/Trab1
-```
-
-Para recompilar após uma alteração no código, normalmente basta executar novamente:
-
-```bash
-cmake --build build --parallel
+./build/ImageLab
 ```
 
 ## Como usar
 
 1. Clique em **Abrir imagem** e selecione um arquivo JPEG.
-2. Escolha uma operação na lista da barra de ferramentas.
-3. Clique em **Aplicar** e informe os parâmetros solicitados, quando houver.
-4. Compare a imagem original com o resultado.
-5. Use **Restaurar original** para descartar as transformações atuais.
-6. Clique em **Salvar resultado** para exportar a imagem processada em JPEG.
+2. Escolha uma operação na barra de ferramentas e clique em **Aplicar**.
+3. Compare a imagem original com o resultado. As operações podem ser encadeadas.
+4. Use **Restaurar original** para descartar as transformações ou **Salvar resultado** para exportar em JPEG.
 
-Na correspondência de histogramas, a imagem aberta é usada como origem e o programa solicita uma segunda imagem em tons de cinza como referência.
+Na correspondência de histogramas, a imagem aberta é a origem, e o programa pede uma segunda imagem como referência.
 
-## Estrutura do projeto
+## Funcionalidades
+
+| Categoria | Operações |
+|---|---|
+| Pontuais | Tons de cinza (luminância), quantização, brilho, contraste, negativo |
+| Geométricas | Espelhamento horizontal/vertical, rotação ±90°, redução e ampliação 2x com interpolação |
+| Histograma | Visualização, equalização, correspondência (*matching*) |
+| Filtragem | Convolução 3x3 com kernel livre, Gaussiano, Laplaciano, Prewitt Hx/Hy, Sobel Hx/Hy |
+
+## Estrutura
 
 ```text
-FPI/
-├── Código/
-│   ├── CMakeLists.txt
-│   ├── main.cpp
-│   ├── mainwindow.cpp
-│   ├── mainwindow.h
-│   ├── funcoes.cpp
-│   ├── funcoes.h
-│   ├── stb_image.h
-│   └── stb_image_write.h
-├── INF01046_Trabalho_2.pdf
-└── README.md
+src/
+├── main.cpp          # ponto de entrada
+├── mainwindow.*      # interface Qt e integração das operações
+├── funcoes.*         # algoritmos de processamento de imagens
+└── stb_image*.h      # leitura/gravação de imagens (dependência embarcada)
+.github/workflows/    # CI: build e empacotamento para Linux e Windows
+packaging/            # ícone e .desktop do AppImage
 ```
 
-- `mainwindow.*`: interface gráfica e integração das operações.
-- `funcoes.*`: algoritmos de processamento de imagens.
-- `stb_image*.h`: dependências embarcadas para arquivos de imagem.
-- `INF01046_Trabalho_2.pdf`: enunciado acadêmico que orientou a implementação.
+## Contexto
 
-## Distribuição
+Projeto desenvolvido para a disciplina **INF01046 — Fundamentos de Processamento de Imagens**, da UFRGS. O enunciado está em [`INF01046_Trabalho_2.pdf`](INF01046_Trabalho_2.pdf).
 
-Quem clonar o código-fonte precisa instalar o Qt 6 para compilar. Um usuário final não precisa instalar o Qt se o aplicativo for distribuído com as bibliotecas de execução necessárias.
-
-Para transformar o projeto em um download pronto para uso, uma evolução recomendada é publicar versões na seção **Releases** do GitHub, por exemplo como AppImage no Linux ou como pacote ZIP no Windows gerado com `windeployqt`.
-
-## Contexto acadêmico
-
-Este repositório demonstra implementação de algoritmos de processamento de imagens, manipulação direta de pixels, desenvolvimento de interfaces desktop com Qt e organização de builds com CMake.
+Licença [MIT](LICENSE).
